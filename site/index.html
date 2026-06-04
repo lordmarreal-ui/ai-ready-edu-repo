@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Ready Edu Repo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>AI-Ready Edu Repo</h1>
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Search lessons...">
+        </div>
+    </header>
+
+    <main>
+        <div id="catalog-view">
+            <div id="lesson-list"></div>
+        </div>
+
+        <div id="detail-view" style="display: none;">
+            <button id="back-btn">&larr; Back to Catalog</button>
+            <div id="lesson-content"></div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
