@@ -6,11 +6,11 @@ const outputFile = path.join(process.cwd(), 'content', 'index.json');
 
 function extractFrontmatter(content) {
   const meta = {};
-  const match = content.match(/---\n([\s\S]*?)\n---/);
+  const match = content.match(/---\r?\n([\s\S]*?)\r?\n---/);
 
   if (match) {
     const yaml = match[1];
-    const lines = yaml.split('\n');
+    const lines = yaml.split(/\r?\n/);
     for (const line of lines) {
       const parts = line.split(':');
       if (parts.length >= 2) {
