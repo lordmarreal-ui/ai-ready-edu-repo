@@ -1,0 +1,13 @@
+{
+  "name": "ai-ready-edu-repo",
+  "version": "1.0.0",
+  "description": "A static, AI-ready educational repository",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-catalog.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "echo \"No automated tests yet\""
+  },
+  "author": "",
+  "license": "MIT"
+}
