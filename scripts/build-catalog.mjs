@@ -8,6 +8,10 @@ function extractFrontmatter(content) {
   const meta = {};
   const match = content.match(/---\r?\n([\s\S]*?)\r?\n---/);
 
+  // Custom YAML parser limitations:
+  // - Only supports single-line arrays (e.g. tags: ["a", "b"])
+  // - Does not support multi-line strings or nested objects
+  // - Array items with internal commas must be quoted
   if (match) {
     const yaml = match[1];
     const lines = yaml.split(/\r?\n/);
