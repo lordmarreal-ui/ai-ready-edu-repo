@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Lesson Frontmatter Schema",
+  "type": "object",
+  "required": ["title", "slug", "summary", "level", "tags", "updated"],
+  "properties": {
+    "title": { "type": "string" },
+    "slug": { "type": "string" },
+    "summary": { "type": "string" },
+    "level": { "type": "string", "enum": ["Beginner", "Intermediate", "Advanced"] },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "updated": { "type": "string", "format": "date" }
+  }
+}
