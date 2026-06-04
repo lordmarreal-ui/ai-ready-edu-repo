@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const contentDir = path.join(process.cwd(), 'content', 'lessons');
-const outputFile = path.join(process.cwd(), 'content', 'index.json');
+const contentDir = path.join(import.meta.dirname, '..', 'content', 'lessons');
+const outputFile = path.join(import.meta.dirname, '..', 'content', 'index.json');
 
 function extractFrontmatter(content) {
   const meta = {};
@@ -23,28 +23,32 @@ function extractFrontmatter(content) {
         if (value.startsWith('"') && value.endsWith('"')) {
           value = value.slice(1, -1);
         } else if (value.startsWith('[') && value.endsWith(']')) {
-          let arrStr = value.slice(1, -1);
-          let items = [];
-          let current = '';
-          let inQuotes = false;
-          for (let i = 0; i < arrStr.length; i++) {
-            let char = arrStr[i];
-            if (char === '"' && (i === 0 || arrStr[i-1] !== '\\')) {
-              inQuotes = !inQuotes;
-              current += char;
-            } else if (char === ',' && !inQuotes) {
-              items.push(current);
-              current = '';
-            } else {
-              current += char;
+          let arrStr = value.slice(1, -1).trim();
+          if (!arrStr) {
+            value = [];
+          } else {
+            let items = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < arrStr.length; i++) {
+              let char = arrStr[i];
+              if (char === '"' && (i === 0 || arrStr[i-1] !== '\\')) {
+                inQuotes = !inQuotes;
+                current += char;
+              } else if (char === ',' && !inQuotes) {
+                items.push(current);
+                current = '';
+              } else {
+                current += char;
+              }
             }
+            items.push(current);
+            value = items.map(s => {
+               let v = s.trim();
+               if(v.startsWith('"') && v.endsWith('"')) return v.slice(1,-1);
+               return v;
+            });
           }
-          items.push(current);
-          value = items.map(s => {
-             let v = s.trim();
-             if(v.startsWith('"') && v.endsWith('"')) return v.slice(1,-1);
-             return v;
-          });
         }
         meta[key] = value;
       }
