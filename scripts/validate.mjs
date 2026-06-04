@@ -3,31 +3,42 @@ import path from 'path';
 
 const contentDir = path.join(process.cwd(), 'content', 'lessons');
 
-function validateFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const fileName = path.basename(filePath);
-  
+function validateFile(fileName, content, slugs) {
   if (!content.trim()) {
     console.error(`Error: File is empty - ${fileName}`);
     return false;
   }
 
-  const requiredFields = ['title:', 'slug:', 'summary:', 'level:', 'tags:', 'updated:'];
-  let hasAllFields = true;
-  
+  const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const frontmatter = frontmatterMatch ? frontmatterMatch[1] : '';
+
+  const requiredFields = ['title', 'slug', 'summary', 'level', 'tags', 'updated'];
+  let isValid = true;
+
   for (const field of requiredFields) {
-    if (!content.includes(field)) {
-      console.error(`Error: Missing required frontmatter field '${field}' in ${fileName}`);
-      hasAllFields = false;
+    const fieldRegex = new RegExp(`^${field}:`, 'm');
+    if (!fieldRegex.test(frontmatter)) {
+      console.error(`Error: Missing required frontmatter field '${field}:' in ${fileName}`);
+      isValid = false;
     }
   }
 
-  if (!content.includes('\n# ')) {
-    console.error(`Error: Missing H1 heading ('# ') in ${fileName}`);
-    return false;
+  const slugMatch = frontmatter.match(/^slug:\s*"([^"]+)"/m) || frontmatter.match(/^slug:\s*'?([^"'\s]+)'?/m);
+  if (slugMatch) {
+    const slug = slugMatch[1];
+    if (slugs.has(slug)) {
+       console.error(`Error: Duplicate slug '${slug}' found in ${fileName}`);
+       isValid = false;
+    }
+    slugs.add(slug);
   }
 
-  return hasAllFields;
+  if (!content.includes('\n# ') && !content.startsWith('# ')) {
+    console.error(`Error: Missing H1 heading ('# ') in ${fileName}`);
+    isValid = false;
+  }
+
+  return isValid;
 }
 
 function main() {
@@ -43,18 +54,8 @@ function main() {
   for (const file of files) {
     const filePath = path.join(contentDir, file);
     const content = fs.readFileSync(filePath, 'utf-8');
-    
-    const slugMatch = content.match(/slug:\s*"([^"]+)"/);
-    if (slugMatch) {
-      const slug = slugMatch[1];
-      if (slugs.has(slug)) {
-         console.error(`Error: Duplicate slug '${slug}' found in ${file}`);
-         allValid = false;
-      }
-      slugs.add(slug);
-    }
 
-    if (!validateFile(filePath)) {
+    if (!validateFile(file, content, slugs)) {
       allValid = false;
     }
   }
