@@ -19,7 +19,24 @@ function extractFrontmatter(content) {
         if (value.startsWith('"') && value.endsWith('"')) {
           value = value.slice(1, -1);
         } else if (value.startsWith('[') && value.endsWith(']')) {
-          value = value.slice(1, -1).split(',').map(s => {
+          let arrStr = value.slice(1, -1);
+          let items = [];
+          let current = '';
+          let inQuotes = false;
+          for (let i = 0; i < arrStr.length; i++) {
+            let char = arrStr[i];
+            if (char === '"' && (i === 0 || arrStr[i-1] !== '\\')) {
+              inQuotes = !inQuotes;
+              current += char;
+            } else if (char === ',' && !inQuotes) {
+              items.push(current);
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          items.push(current);
+          value = items.map(s => {
              let v = s.trim();
              if(v.startsWith('"') && v.endsWith('"')) return v.slice(1,-1);
              return v;
